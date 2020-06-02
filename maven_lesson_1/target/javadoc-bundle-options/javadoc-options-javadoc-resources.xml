@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<javadocOptions>
+  <tags>
+    <tag>
+      <name>describe</name>
+      <head>描述</head>
+    </tag>
+    <tag>
+      <name>author</name>
+      <head>作者</head>
+    </tag>
+    <tag>
+      <name>date</name>
+      <head>日期</head>
+    </tag>
+    <tag>
+      <name>param</name>
+      <head>参数</head>
+    </tag>
+    <tag>
+      <name>return</name>
+      <head>返回值</head>
+    </tag>
+  </tags>
+  <docletArtifacts>
+    <docletArtifact />
+  </docletArtifacts>
+  <tagletArtifacts>
+    <tagletArtifact />
+  </tagletArtifacts>
+  <javadocResourcesDirectory>src/main/javadoc</javadocResourcesDirectory>
+</javadocOptions>

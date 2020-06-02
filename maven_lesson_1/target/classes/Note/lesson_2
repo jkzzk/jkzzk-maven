@@ -1,0 +1,131 @@
+1.构建的生命周期
+    Maven 有以下三个标准的生命周期：
+        clean：项目清理的处理
+            pre-clean：执行一些需要在clean之前完成的工作
+            clean：移除所有上一次构建生成的文件
+            post-clean：执行一些需要在clean之后立刻完成的工作
+        default(或 build)：项目部署的处理
+            validate（校验）	校验项目是否正确并且所有必要的信息可以完成项目的构建过程。
+            initialize（初始化）	初始化构建状态，比如设置属性值。
+            generate-sources（生成源代码）	生成包含在编译阶段中的任何源代码。
+            process-sources（处理源代码）	处理源代码，比如说，过滤任意值。
+            generate-resources（生成资源文件）	生成将会包含在项目包中的资源文件。
+            process-resources （处理资源文件）	复制和处理资源到目标目录，为打包阶段最好准备。
+            compile（编译）	编译项目的源代码。
+            process-classes（处理类文件）	处理编译生成的文件，比如说对Java class文件做字节码改善优化。
+            generate-test-sources（生成测试源代码）	生成包含在编译阶段中的任何测试源代码。
+            process-test-sources（处理测试源代码）	处理测试源代码，比如说，过滤任意值。
+            generate-test-resources（生成测试资源文件）	为测试创建资源文件。
+            process-test-resources（处理测试资源文件）	复制和处理测试资源到目标目录。
+            test-compile（编译测试源码）	编译测试源代码到测试目标目录.
+            process-test-classes（处理测试类文件）	处理测试源码编译生成的文件。
+            test（测试）	使用合适的单元测试框架运行测试（Juint是其中之一）。
+            prepare-package（准备打包）	在实际打包之前，执行任何的必要的操作为打包做准备。
+            package（打包）	将编译后的代码打包成可分发格式的文件，比如JAR、WAR或者EAR文件。
+            pre-integration-test（集成测试前）	在执行集成测试前进行必要的动作。比如说，搭建需要的环境。
+            integration-test（集成测试）	处理和部署项目到可以运行集成测试环境中。
+            post-integration-test（集成测试后）	在执行集成测试完成后进行必要的动作。比如说，清理集成测试环境。
+            verify （验证）	运行任意的检查来验证项目包有效且达到质量标准。
+            install（安装）	安装项目包到本地仓库，这样项目包可以用作其他本地项目的依赖。
+            deploy（部署）	将最终的项目包复制到远程仓库中与其他开发者和项目共享。
+        site：项目站点文档创建的处理
+            pre-site：执行一些需要在生成站点文档之前完成的工作
+            site：生成项目的站点文档
+            post-site： 执行一些需要在生成站点文档之后完成的工作，并且为部署做准备
+            site-deploy：将生成的站点文档部署到特定的服务器上
+
+    注：执行任意一个声明周期阶段时，之前的阶段也会被执行！
+
+2.仓库
+    1）.仓库分类
+        本地（local）  ： 本地下载第三方依赖后的存放文件夹/目录  默认 .m2/respository 下
+        中央（central） ： 这个仓库由 Maven 社区管理，通过网路下载该库的第三方依赖包
+        远程（remote） ： 第三方仓库，通过网路下载该库的第三方依赖包
+    2）.Maven 依赖搜索顺序
+        步骤 1 － 在本地仓库中搜索，如果找不到，执行步骤 2，如果找到了则执行其他操作。
+        步骤 2 － 在中央仓库中搜索，如果找不到，并且有一个或多个远程仓库已经设置，则执行步骤 4，
+            如果找到了则下载到本地仓库中以备将来引用。
+        步骤 3 － 如果远程仓库没有被设置，Maven 将简单的停滞处理并抛出错误（无法找到依赖的文件）。
+        步骤 4 － 在一个或多个远程仓库中搜索依赖的文件，如果找到则下载到本地仓库以备将来引用，
+            否则 Maven 将停止处理并抛出错误（无法找到依赖的文件）。
+    3）.设置阿里云仓库
+        第一步：添加阿里云maven仓库镜像到 maven下的confg/Setting 文件中
+            <mirrors>
+                <mirror>
+                  <id>alimaven</id>
+                  <name>aliyun maven</name>
+                  <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+                  <mirrorOf>central</mirrorOf>
+                </mirror>
+            </mirrors>
+        第二步：在POM中添加依赖库设置
+            <repositories>
+                    <repository>
+                        <id>alimaven</id>
+                        <name>aliyun maven</name>
+                        <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+                        <releases>
+                            <enabled>true</enabled>
+                        </releases>
+                        <snapshots>
+                            <enabled>false</enabled>
+                        </snapshots>
+                    </repository>
+            </repositories>
+3.插件
+    1）.说明：Maven构建过程其实是由不同插件组成的，每个阶段就像是定义好的接口，而每个插件就是对接口规范的实现
+        例如：
+            创建 jar 文件
+            创建 war 文件
+            编译代码文件
+            代码单元测试
+            创建工程文档
+            创建工程报告
+    2）.mvn [plugin-name]:[goal-name] 执行插件的命令格式
+        插件名称：目标名称
+    3）.插件分类
+            (1).maven提供两种插件
+                构建插件 ： 构建时用到的插件
+                报告插件 ： 生成文档报告时用到的插件
+    4).插件介绍（maven提供的插件可以到maven官网上去查看用法与实例）
+        maven-compiler-plugin：
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <!-- 一般而言，target与source是保持一致的，但是，有时候为了让程序能在其他版本的jdk中运行(对于低版本目标jdk，源代码中不能使用低版本jdk中不支持的语法)，会存在target不同于source的情况 -->
+                <source>1.8</source> <!-- 源代码使用的JDK版本 -->
+                <target>1.8</target> <!-- 需要生成的目标class文件的编译版本 -->
+                <encoding>UTF-8</encoding><!-- 字符集编码 -->
+                <skipTests>true</skipTests><!-- 跳过测试 -->
+                <verbose>true</verbose>
+                <showWarnings>true</showWarnings>
+                <fork>true</fork><!-- 要使compilerVersion标签生效，还需要将fork设为true，用于明确表示编译版本配置的可用 -->
+                <executable><!-- path-to-javac --></executable><!-- 使用指定的javac命令，例如：<executable>${JAVA_1_4_HOME}/bin/javac</executable> -->
+                <compilerVersion>1.3</compilerVersion><!-- 指定插件将使用的编译器的版本 -->
+                <meminitial>128m</meminitial><!-- 编译器使用的初始内存 -->
+                <maxmem>512m</maxmem><!-- 编译器使用的最大内存 -->
+                <compilerArgument>-verbose -bootclasspath ${java.home}\lib\rt.jar</compilerArgument><!-- 这个选项用来传递编译器自身不包含但是却支持的参数选项 -->
+            </configuration>
+        maven-javadoc-plugin :
+            注： ！maven命令默认为GBK编码，所以设置成UTF8在控制台运行命令时会乱码
+                    IEDA 可以在maven配置下的vm option 中 写入参数 -Dfile.encoding=GBK
+                    如果是cmd命令窗口，直接把参数加入
+            <encoding></encoding> 编码
+            <charset>UTF8</charset> 字符集
+            <docencoding>UTF8</docencoding> 解码
+            <tags>
+                <tag>
+                    <name></name> 名称
+                    <placement>a</placement> 含义
+                        值：
+                            X (disable tag)
+                            a (all)
+                            o (overview)
+                            p (packages)
+                            t (types, that is classes and interfaces)
+                            c (constructors)
+                            m (methods)
+                            f (fields)
+                    <head></head> 名称对应的显示值
+                </tag>
+            </tags>
